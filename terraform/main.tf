@@ -40,40 +40,16 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-# Create Security Group
-resource "aws_security_group" "web_sg" {
-  name        ="jenkins-web-sg-01"
-  description = "Allow SSH and HTTP traffic"
-  vpc_id      = data.aws_vpc.default.id
-
-  # Allow SSH access
-  ingress {
-    description = "SSH access"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.my_ip]
+# Find the existing Security Group
+data "aws_security_group" "web_sg" {
+  filter {
+    name   = "group-name"
+    values = ["jenkins-web-sg-01"]
   }
 
-  # Allow HTTP access
-  ingress {
-    description = "HTTP access"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow outbound traffic
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "jenkins-web-sg"
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
   }
 }
 
@@ -85,7 +61,7 @@ resource "aws_instance" "web_server" {
   subnet_id = data.aws_subnets.default.ids[0]
 
   vpc_security_group_ids = [
-    aws_security_group.web_sg.id
+    data.aws_security_group.web_sg.id
   ]
 
   key_name = var.key_name
