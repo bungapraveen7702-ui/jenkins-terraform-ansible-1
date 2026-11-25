@@ -1,18 +1,13 @@
 
-variable "aws_region" {
-  type    = string
-  default = "ap-soutteast-2"
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
 }
 
-variable "instance_type" {
-  type    = string
-  default = "t3.micro"
-}
-
-variable "key_name" {
-  type = string
-}
-
-variable "my_ip" {
-  type = string
+provider "aws" {
+  region = "ap-southeast-2"
 }
