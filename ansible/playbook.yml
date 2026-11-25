@@ -1,7 +1,6 @@
 
 ---
 - name: Configure EC2 Web Server
-
   hosts: all
   become: yes
 
@@ -22,7 +21,7 @@
 
     - name: Copy website file
       copy:
-        src: ../application/index.html
+        src: "{{ playbook_dir }}/../application/index.html"
         dest: /var/www/html/index.html
         owner: www-data
         group: www-data
