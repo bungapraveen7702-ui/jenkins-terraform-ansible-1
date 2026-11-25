@@ -42,7 +42,7 @@ data "aws_ami" "ubuntu" {
 
 # Create Security Group
 resource "aws_security_group" "web_sg" {
-  name        = "jenkins-web-sg"
+  name        ="jenkins-web-sg-01"
   description = "Allow SSH and HTTP traffic"
   vpc_id      = data.aws_vpc.default.id
 
