@@ -6,12 +6,12 @@ variable "instance_type" {
 }
 
 variable "key_name" {
-  description = "AWS EC2 key pair name"
+  description = "Existing AWS EC2 key pair name"
   type        = string
   default     = "jenkins-ec2-key"
 }
 
 variable "my_ip" {
-  description = "Your public IP address with /32"
+  description = "Your public IP address for SSH access"
   type        = string
 }
