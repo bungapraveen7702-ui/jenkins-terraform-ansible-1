@@ -1,7 +1,7 @@
 
 variable "aws_region" {
   type    = string
-  default = "ap-south-1"
+  default = "ap-soutteast-2"
 }
 
 variable "instance_type" {

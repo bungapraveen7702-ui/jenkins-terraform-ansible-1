@@ -1,21 +1,23 @@
 
 # Find the default VPC
-
 data "aws_vpc" "default" {
   default = true
 }
 
-# Find subnets in the default VPC
-
+# Find public subnets in the default VPC
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.default.id]
   }
+
+  filter {
+    name   = "map-public-ip-on-launch"
+    values = ["true"]
+  }
 }
 
-# Find Ubuntu 24.04 AMI
-
+# Find the latest Ubuntu 24.04 AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"]
@@ -31,41 +33,51 @@ data "aws_ami" "ubuntu" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
 }
 
 # Create Security Group
-
 resource "aws_security_group" "web_sg" {
-  name   = "jenkins-web-sg"
-  vpc_id = data.aws_vpc.default.id
+  name        = "jenkins-web-sg"
+  description = "Allow SSH and HTTP traffic"
+  vpc_id      = data.aws_vpc.default.id
 
-  # SSH access
+  # Allow SSH access
   ingress {
+    description = "SSH access"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.my_ip]
   }
 
-  # HTTP access
+  # Allow HTTP access
   ingress {
+    description = "HTTP access"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Outbound access
+  # Allow outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "jenkins-web-sg"
+  }
 }
 
 # Create EC2 instance
-
 resource "aws_instance" "web_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
